@@ -1,6 +1,6 @@
-import app from './server.js';
-import dotenv from 'dotenv';
-import mongodb from 'mongodb';
+const app = require('./server.js');
+const dotenv = require('dotenv');
+const mongodb = require('mongodb');
 
 dotenv.config();
 
