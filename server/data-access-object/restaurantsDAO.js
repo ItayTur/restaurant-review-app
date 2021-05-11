@@ -6,7 +6,7 @@ class RestaurantsDAO {
             if (restaurants) {
                 return;
             }
-            restaurants = await conn.db(proccess.env.RESTREVIEWS_NS).collection('restaurants');
+            restaurants = await conn.db(process.env.RESTREVIEWS_NS).collection('restaurants');
         } catch (error) {
             console.error('Unable to connect, error: ', error);
         }
@@ -19,13 +19,15 @@ class RestaurantsDAO {
     }) {
         let query;
         if (filters) {
-            query = { $text: { $search: filters['name'] } }
-        } else if ('cuisine' in filters) {
-            query = { 'cuisine': { $eq: filters['cuisine'] } }
-        } else if ('zipcode' in filters) {
-            query = { 'address.zipcode': { $eq: filters['zipcode'] } }
+            if ('name' in filters) {
+                query = { $text: { $search: filters['name'] } }
+            } else if ('cuisine' in filters) {
+                query = { 'cuisine': { $eq: filters['cuisine'] } }
+            } else if ('zipcode' in filters) {
+                query = { 'address.zipcode': { $eq: filters['zipcode'] } }
+            }
         }
-
+        let cursor;
         try {
             cursor = restaurants.find(query);
         } catch (error) {
@@ -36,10 +38,10 @@ class RestaurantsDAO {
         try {
             const displayCursor = cursor.limit(restaurantsPerPage).skip(restaurantsPerPage * page);
             const restaurantsList = await displayCursor.toArray();
-            const totalNumRestaurants = await restaurants.countDocuments(query);
+            const totalNumRestaurants = page === 0 ? await restaurants.countDocuments(query) : 0;
             return { restaurantsList, totalNumRestaurants }
         } catch (error) {
-            console.error('Unable to conver cursor to array');
+            console.error('Unable to convert cursor to array, error:', error);
             return { restaurantsList: [], totalNumRestaurants: 0 };
         }
 
