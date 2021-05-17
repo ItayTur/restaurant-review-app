@@ -1,4 +1,6 @@
 let restaurants;
+const mongodb = require('mongodb');
+const ObjectId = mongodb.ObjectID;
 
 class RestaurantsDAO {
     static async injectDB(conn) {
@@ -45,6 +47,60 @@ class RestaurantsDAO {
             return { restaurantsList: [], totalNumRestaurants: 0 };
         }
 
+    }
+
+    static async getRestaurantById(id) {
+        try {
+            const pipeline = [
+                {
+                    $match: {
+                        _id: new ObjectId(id)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'reviews',
+                        let: {
+                            id: '$_id'
+                        },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$restaurant_id", "$$id"]
+                                    }
+                                }
+                            },
+                            {
+                                $sort: {
+                                    date: -1
+                                }
+                            }
+                        ],
+                        as: 'reviews'
+                    }
+                },
+                {
+                    $addFields: {
+                        reviews: '$reviews'
+                    }
+                }
+            ];
+            return await restaurants.aggregate(pipeline).next();
+        } catch (error) {
+            console.error('Error at restaurantsDAO.js, error:', error);
+            throw error;
+        }
+    }
+
+    static async getCuisines() {
+        try {
+            const cuisines = await restaurants.distinct('cuisine');
+            return cuisines;
+        } catch (error) {
+            console.error(`Unable to get cuisines, error: ${error.message}`);
+            throw error;
+        }
     }
 }
 

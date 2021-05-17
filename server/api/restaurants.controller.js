@@ -24,6 +24,28 @@ class RestaurantsController {
 
         res.json(response);
     }
+
+    static async getRestaurantById(req, res) {
+        try {
+            const id = req.params.id || {};
+            const restaurant = await RestaurantsDAO.getRestaurantById(id);
+            if (!restaurant) {
+                throw new Error(`Unable to find restaurant with id: ${id}`);
+            }
+            res.json(restaurant);
+        } catch (error) {
+            res.status(500).send({ error: error.message });
+        }
+    }
+
+    static async getCuisines(req, res) {
+        try {
+            const cuisines = await RestaurantsDAO.getCuisines();
+            res.json(cuisines);
+        } catch (error) {
+            res.status(500).send({ error: error.message });
+        }
+    }
 }
 
 module.exports = RestaurantsController;

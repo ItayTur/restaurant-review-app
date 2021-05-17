@@ -5,6 +5,8 @@ const ReviewsController = require('./reviews.controller.js');
 const router = express.Router();
 
 router.route('/').get(RestaurantsController.getRestaurants);
+router.route('/id/:id').get(RestaurantsController.getRestaurantById);
+router.route('/cuisines').get(RestaurantsController.getCuisines);
 
 router
     .route('/reviews')
