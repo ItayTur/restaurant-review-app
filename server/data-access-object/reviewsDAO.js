@@ -19,6 +19,7 @@ class ReviewsDAO {
         try {
             const reviewToAdd = {
                 name: user.name,
+                user_id: user._id,
                 date, 
                 text: review,
                 restaurant_id: ObjectId(restaurantId),
@@ -30,10 +31,10 @@ class ReviewsDAO {
         }
     }
 
-    static async updateReview(reviewId, userId, review, date) {
+    static async updateReview(reviewId, userInfo, review, date) {
         try {
             const updateResponse = await reviews.updateOne(
-                { user_id: userId, _id: ObjectId(reviewId) },
+                { user_id: userInfo._id, _id: ObjectId(reviewId) },
                 { $set: { text: review, date }}
             );
             return updateResponse;

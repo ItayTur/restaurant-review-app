@@ -27,7 +27,7 @@ class ReviewsController {
 
     static async updateReview(req, res) {
         try {
-            const restaurantId = req.body.restaurant_id;
+            const reviewId = req.body.review_id;
             const review = req.body.text;
             const userInfo = {
                 name: req.body.name,
@@ -35,8 +35,8 @@ class ReviewsController {
             }
             const date = new Date();
 
-            const reviewResponse = ReviewsDAO.updateReview(
-                restaurantId,
+            const reviewResponse = await ReviewsDAO.updateReview(
+                reviewId,
                 userInfo,
                 review,
                 date,
@@ -51,7 +51,7 @@ class ReviewsController {
                     "unable to update review - user may not be original poster"
                 )
             }
-            res.json({ status: success });
+            res.json({ status: 'success' });
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
