@@ -10,11 +10,11 @@ import Login from "./components/Login/Login";
 const App = () => {
   const [user, setUser] = useState(null);
 
-  const login = async (user = null) => {
+  const login = (user = null) => {
     setUser(user);
   }
 
- const logout = async () => {
+ const logout = () => {
     setUser(null)
   }
 
